@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"log"
@@ -28,14 +29,14 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-func Wdb(bucket, key, value string) {
+func Wdb(bucket, key, value []byte) {
 	db, err := bolt.Open("clip2.db", 0600, nil)
 	if err != nil {
 		fmt.Print(err)
 	}
 	db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(bucket))
-		err := b.Put([]byte(key), []byte(value))
+		b := tx.Bucket(bucket)
+		err := b.Put(key, value)
 		return err
 	})
 	db.Close()
@@ -73,9 +74,13 @@ func createImage(w http.ResponseWriter, request *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
 	// Transform multipart to string and insert it into the DB below pls
-	Wdb(bucket, key)
-	Rdb(bucket, key)
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(file)
+	//fmt.Print(buf)
+	Wdb([]byte(bucket), []byte(key), buf.Bytes())
+	//Rdb(bucket, key)
 	var a = Rdb(bucket, key)
 	fmt.Print(a)
 	tmpfile, err := os.Create("./" + h.Filename)
@@ -83,6 +88,8 @@ func createImage(w http.ResponseWriter, request *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	tmpfile.WriteString(a)
 	defer tmpfile.Close()
 
 	_, err = io.Copy(tmpfile, file)
