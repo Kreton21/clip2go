@@ -18,15 +18,15 @@ func main() {
 	defer db.Close()
 
 	db.Update(func(tx *bolt.Tx) error {
-		_, err := tx.CreateBucket([]byte("MyBucket"))
+		_, err := tx.CreateBucket([]byte("bucket"))
 		if err != nil {
 			return fmt.Errorf("create bucket: %s", err)
 		}
 		return nil
 	})
 	db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte("MyBucket"))
-		err := b.Put([]byte("image"), []byte("42"))
+		b := tx.Bucket([]byte("bucket"))
+		err := b.Put([]byte("image1"), []byte("42"))
 		return err
 	})
 	db.View(func(tx *bolt.Tx) error {
