@@ -1,0 +1,6 @@
+package watchclip
+
+func WatchClip(){
+
+
+}
