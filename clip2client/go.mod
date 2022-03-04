@@ -1,4 +1,4 @@
-module clip
+module clip2go
 
 go 1.17
 

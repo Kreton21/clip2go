@@ -1,3 +1,3 @@
-module go2serv
+module clip2serv
 
 go 1.17
