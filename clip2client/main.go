@@ -15,6 +15,7 @@ import (
 	"os"
 	"strconv"
 
+	//	"watchclip"
 	"golang.design/x/clipboard"
 )
 
@@ -57,9 +58,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	i := 0
 
-	a := "test"
+	var a string
 
 	for {
 		changed := clipboard.Watch(context.Background(), clipboard.FmtImage)
@@ -71,8 +73,6 @@ func main() {
 		img.WriteString(a)
 		fmt.Println("written")
 
-		//resp, err := http.Get("http://webcode.me")
-		//fmt.Println(resp)
 		call(filename, urlroot+"/send", "POST")
 		img.Close()
 		os.Remove(filename)
