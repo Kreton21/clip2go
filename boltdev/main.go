@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+
 	// Open the my.db data file in your current directory.
 	// It will be created if it doesn't exist.
 	db, err := bolt.Open("my.db", 0600, nil)
@@ -25,13 +26,13 @@ func main() {
 	})
 	db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("MyBucket"))
-		err := b.Put([]byte("answer"), []byte("42"))
+		err := b.Put([]byte("image"), []byte("42"))
 		return err
 	})
 	db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("MyBucket"))
-		v := b.Get([]byte("answer"))
-		fmt.Printf("The answer is: %s\n", v)
+		v := b.Get([]byte("image"))
+		fmt.Printf(string(v))
 		return nil
 	})
 }
