@@ -61,7 +61,7 @@ func Rdb(bucket, key string) string {
 }
 func createImage(w http.ResponseWriter, request *http.Request) {
 	bucket := "bucket"
-	key := "image"
+	//key := "image"
 	//var value = "123test"
 	err := request.ParseMultipartForm(100 << 20) // maxMemory 100MB
 	if err != nil {
@@ -75,15 +75,15 @@ func createImage(w http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	// Transform multipart to string and insert it into the DB below pls
+	// bytes are bullshit
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(file)
 	//fmt.Print(buf)
-	Wdb([]byte(bucket), []byte(key), buf.Bytes())
+	Wdb([]byte(bucket), []byte(h.Filename), buf.Bytes())
 	//Rdb(bucket, key)
-	var a = Rdb(bucket, key)
+	var a = Rdb(bucket, h.Filename)
 	fmt.Print(a)
-	tmpfile, err := os.Create("./" + h.Filename)
+	tmpfile, err := os.Create("/tmp/" + h.Filename)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -97,7 +97,8 @@ func createImage(w http.ResponseWriter, request *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
+	user := request.FormValue("user")
+	fmt.Print(string(user) + " USER")
 	w.WriteHeader(200)
 
 }

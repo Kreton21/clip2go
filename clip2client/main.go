@@ -40,6 +40,11 @@ func call(filename, urlPath, method string) error {
 	if err != nil {
 		return err
 	}
+	user, err := writer.CreateFormField("user")
+	user.Write([]byte("Kreton"))
+	if err != nil {
+		return err
+	}
 	writer.Close()
 	req, err := http.NewRequest(method, urlPath, bytes.NewReader(body.Bytes()))
 	if err != nil {
@@ -71,7 +76,7 @@ func main() {
 		fmt.Println("created")
 
 		img.WriteString(a)
-		fmt.Println("written")
+		fmt.Println("written " + strconv.Itoa(i))
 
 		call(filename, urlroot+"/send", "POST")
 		img.Close()
