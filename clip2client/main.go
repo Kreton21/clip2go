@@ -41,7 +41,7 @@ func call(filename, urlPath, method string) error {
 		return err
 	}
 	user, err := writer.CreateFormField("user")
-	user.Write([]byte("Kreton"))
+	user.Write([]byte("Kretonn"))
 	if err != nil {
 		return err
 	}

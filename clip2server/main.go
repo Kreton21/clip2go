@@ -25,10 +25,14 @@ func main() {
 	}
 	db.Close()
 	createImageHandler := http.HandlerFunc(createImage)
+	getUserClip := http.HandlerFunc(getClip)
 	http.Handle("/send", createImageHandler)
+	http.Handle("/get", getUserClip)
 	http.ListenAndServe(":8080", nil)
 }
-
+func getClip(w http.ResponseWriter, request *http.Request) {
+	// gtsdjhsabnkml
+}
 func Wdb(bucket, key, value []byte) {
 	db, err := bolt.Open("clip2.db", 0600, nil)
 	if err != nil {
@@ -60,6 +64,11 @@ func Rdb(bucket, key string) string {
 	return result
 }
 func createImage(w http.ResponseWriter, request *http.Request) {
+	user := request.FormValue("user")
+	if user != "Kreton" {
+		fmt.Print("Incorrect user")
+		return
+	}
 	bucket := "bucket"
 	//key := "image"
 	//var value = "123test"
@@ -97,7 +106,6 @@ func createImage(w http.ResponseWriter, request *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	user := request.FormValue("user")
 	fmt.Print(string(user) + " USER")
 	w.WriteHeader(200)
 
