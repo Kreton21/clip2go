@@ -31,7 +31,7 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 func getClip(w http.ResponseWriter, request *http.Request) {
-	// gtsdjhsabnkml
+	w.Write([]byte("Received a GET request\n"))
 }
 func Wdb(bucket, key, value []byte) {
 	db, err := bolt.Open("clip2.db", 0600, nil)
