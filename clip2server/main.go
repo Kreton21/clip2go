@@ -78,7 +78,7 @@ func createImage(w http.ResponseWriter, request *http.Request) {
 	bolted.Wdb([]byte(bucket), []byte(key), []byte(value))
 	var a = bolted.Rdb(bucket, key)
 
-	fmt.Print(a)
+	fmt.Println(a)
 
 	w.WriteHeader(200)
 
