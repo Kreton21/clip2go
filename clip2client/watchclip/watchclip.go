@@ -11,7 +11,7 @@ import (
 	"golang.design/x/clipboard"
 )
 
-func _init() {
+func init() {
 	fmt.Println("Clip Watcher 0.0.2")
 }
 func WatchClip() ([]byte, bool) {
