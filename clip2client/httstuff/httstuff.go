@@ -13,7 +13,6 @@ func Call(filename []byte, urlPath string) error {
 	client := &http.Client{
 		Timeout: time.Second * 10,
 	}
-
 	// New multipart writer.
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
@@ -25,6 +24,7 @@ func Call(filename []byte, urlPath string) error {
 
 	writer.Close()
 	req, err := http.NewRequest("Post", urlPath, bytes.NewReader(body.Bytes()))
+	req.SetBasicAuth("Kreton", "test")
 	if err != nil {
 		return err
 	}

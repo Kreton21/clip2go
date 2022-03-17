@@ -26,7 +26,7 @@ func clipnsend(urlroot string) {
 
 func main() {
 	//Variables to assign with GUI:
-	urlroot := "http://localhost:8080"
+	urlroot := "https://localhost:4000"
 	//username:= "Kreton"
 	//password:= "password"
 	var wg sync.WaitGroup //Sync group for go routines

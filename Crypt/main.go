@@ -25,7 +25,6 @@ func main() {
 	if app.auth.username == "" {
 		log.Fatal("basic auth username must be provided")
 	}
-	test
 	if app.auth.password == "" {
 		log.Fatal("basic auth password must be provided")
 	}
