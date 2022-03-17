@@ -1,12 +1,10 @@
 package main
 
 import (
-	"bytes"
+	"clip2serv/bolted"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/boltdb/bolt"
 )
@@ -25,52 +23,22 @@ func main() {
 	}
 	db.Close()
 	createImageHandler := http.HandlerFunc(createImage)
+	createTextHandler := http.HandlerFunc(createText)
+
 	getUserClip := http.HandlerFunc(getClip)
-	http.Handle("/send", createImageHandler)
+	http.Handle("/sendimg", createImageHandler)
+	http.Handle("/sendtxt", createTextHandler)
+
 	http.Handle("/get", getUserClip)
 	http.ListenAndServe(":8080", nil)
 }
 func getClip(w http.ResponseWriter, request *http.Request) {
 	w.Write([]byte("Received a GET request\n"))
 }
-func Wdb(bucket, key, value []byte) {
-	db, err := bolt.Open("clip2.db", 0600, nil)
-	if err != nil {
-		fmt.Print(err)
-	}
-	db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket(bucket)
-		err := b.Put(key, value)
-		return err
-	})
-	db.Close()
-}
 
-func Rdb(bucket, key string) string {
-	var result string
-	db, err := bolt.Open("clip2.db", 0600, nil)
-	if err != nil {
-		fmt.Print(err)
-	}
-
-	db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(bucket))
-		v := b.Get([]byte(key))
-		result = string(v)
-		//	fmt.Printf(string(v))
-		return nil
-	})
-	db.Close()
-	return result
-}
-func createImage(w http.ResponseWriter, request *http.Request) {
-	user := request.FormValue("user")
-	if user != "Kreton" {
-		fmt.Print("Incorrect user")
-		return
-	}
+func createText(w http.ResponseWriter, request *http.Request) {
 	bucket := "bucket"
-	//key := "image"
+	key := "image"
 	//var value = "123test"
 	err := request.ParseMultipartForm(100 << 20) // maxMemory 100MB
 	if err != nil {
@@ -78,35 +46,40 @@ func createImage(w http.ResponseWriter, request *http.Request) {
 		return
 	}
 	//Access the photo key - First Approach
-	file, h, err := request.FormFile("photo")
+	value := request.FormValue("photo")
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	// bytes are bullshit
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(file)
-	//fmt.Print(buf)
-	Wdb([]byte(bucket), []byte(h.Filename), buf.Bytes())
-	//Rdb(bucket, key)
-	var a = Rdb(bucket, h.Filename)
+	bolted.Wdb([]byte(bucket), []byte(key), []byte(value))
+	var a = bolted.Rdb(bucket, key)
+
 	fmt.Print(a)
-	tmpfile, err := os.Create("/tmp/" + h.Filename)
+
+	w.WriteHeader(200)
+}
+func createImage(w http.ResponseWriter, request *http.Request) {
+	bucket := "bucket"
+	key := "image"
+	//var value = "123test"
+	err := request.ParseMultipartForm(100 << 20) // maxMemory 100MB
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	//Access the photo key - First Approach
+	value := request.FormValue("photo")
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	tmpfile.WriteString(a)
-	defer tmpfile.Close()
+	bolted.Wdb([]byte(bucket), []byte(key), []byte(value))
+	var a = bolted.Rdb(bucket, key)
 
-	_, err = io.Copy(tmpfile, file)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	fmt.Print(string(user) + " USER")
+	fmt.Print(a)
+
 	w.WriteHeader(200)
 
 }
