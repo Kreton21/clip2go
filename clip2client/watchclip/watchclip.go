@@ -1,17 +1,32 @@
-// package watchclip
+package watchclip
 
-// import (
-// 	//	"watchclip"
-// 	"bytes"
-// 	"io"
-// 	"log"
-// 	"mime/multipart"
-// 	"net/http"
-// 	"time"
-// 	//	"image/png" //needed to use `png` encoder
-// 	"os"
-// )
+import (
+	//	"watchclip"
 
-// func WatchClip() {
+	"context"
 
-// }
+	//	"image/png" //needed to use `png` encoder
+
+	"golang.design/x/clipboard"
+)
+
+func WatchClip() ([]byte, bool) {
+	err := clipboard.Init()
+	if err != nil {
+		panic(err)
+	}
+	changedImg := clipboard.Watch(context.Background(), clipboard.FmtImage)
+	changedTxt := clipboard.Watch(context.Background(), clipboard.FmtText)
+	select {
+	case a := <-changedImg:
+		{
+			isImg := true
+			return a, isImg
+		}
+	case b := <-changedTxt:
+		{
+			isImg := true
+			return b, isImg
+		}
+	}
+}
