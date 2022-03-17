@@ -31,8 +31,9 @@ func InitServ() {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/sendimg", app.CreateImage)
-	mux.HandleFunc("/sendtxt", app.CreateText)
+	mux.HandleFunc("/sendimg", app.basicAuth(app.CreateImage))
+	mux.HandleFunc("/sendtxt", app.basicAuth(app.CreateText))
+
 	mux.HandleFunc("/get", app.test)
 
 	srv := &http.Server{
@@ -58,16 +59,11 @@ func (app *application) CreateText(w http.ResponseWriter, r *http.Request) {
 	key := "image"
 	//var value = "123test"
 	err := r.ParseMultipartForm(100 << 20) // maxMemory 100MB
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	log.Fatal(err)
+
 	//Access the photo key - First Approach
 	value := r.FormValue("photo")
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	log.Fatal(err)
 
 	bolted.Wdb([]byte(bucket), []byte(key), []byte(value))
 	var a = bolted.Rdb(bucket, key)
@@ -99,6 +95,8 @@ func (app *application) CreateImage(w http.ResponseWriter, request *http.Request
 	w.WriteHeader(200)
 
 }
+
+//Liberer tt mes copains
 func (app *application) basicAuth(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		username, password, ok := r.BasicAuth()

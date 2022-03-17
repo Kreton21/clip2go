@@ -24,7 +24,7 @@ func Call(filename []byte, urlPath string) error {
 
 	writer.Close()
 	req, err := http.NewRequest("Post", urlPath, bytes.NewReader(body.Bytes()))
-	req.SetBasicAuth("Kreton", "test")
+	req.SetBasicAuth("Kreton", "password")
 	if err != nil {
 		return err
 	}
